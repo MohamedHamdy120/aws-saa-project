@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Guestbook</title>
+</head>
+<body>
+    <div>
+       <form id="message-form">
+        <input id="name-input" type="text" placeholder="Your name" required>
+        <br>
+        <textarea id="text-input" placeholder="Your message" required></textarea>
+        <br>
+        <button type="submit">Post message</button>
+       </form> 
+       <div id="message-list"></div>
+    </div>
+    <script>
+        const form = document.getElementById("message-form")
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const name=document.getElementById('name-input').value;
+            const message=document.getElementById('text-input').value;
+
+            const response= await fetch('/messages',{
+            method: 'POST',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify({
+                name: name,
+                message: message
+            })
+        })
+        form.reset();
+        await loadMessages();
+        });
+
+        async function loadMessages() {
+            const response=await fetch('/messages');
+            const messages=await response.json();
+            document.getElementById('message-list').innerHTML='';
+
+            messages.forEach(msg => {
+                const el= document.createElement('div');
+                el.textContent=msg.name + ':' + msg.message + '(' + msg.timestamp + ')';
+                document.getElementById('message-list').appendChild(el);
+            });
+        }
+
+        loadMessages();
+    </script>
+</body>
+</html>

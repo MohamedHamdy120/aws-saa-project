@@ -1,0 +1,15 @@
+venv/
+.terraform/
+*.tfstate*
+*.tfvars
+.terraform.lock.hcl
+*.tf
+.env
+instance/
+.git/
+.gitignore
+.DS_Store
+.vscode/
+.idea/
+*.pyc
+__pycache__

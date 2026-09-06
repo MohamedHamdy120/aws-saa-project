@@ -1,0 +1,6 @@
+Flask
+SQLAlchemy
+pymysql
+boto3
+python-dotenv
+flask-sqlalchemy

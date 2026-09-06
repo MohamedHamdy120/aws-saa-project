@@ -5,3 +5,11 @@
 terraform.tfvars
 *.tfvars
 *.tfvars.json
+venv/
+__pycache__/
+*.pyc
+.env
+instance/
+.DS_Store
+.vscode/
+.idea/
