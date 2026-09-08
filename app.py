@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask import Flask, request, jsonify,render_template
+from flask import Flask, request, jsonify
 
 load_dotenv()
 DATABASE_URL=os.getenv("DATABASE_URL")
@@ -17,10 +17,6 @@ class Message(db.Model):
     name=db.Column(db.String(100),nullable=False)
     message=db.Column(db.Text, nullable=False)
     timestamp=db.Column(db.DateTime, default=datetime.utcnow)
-
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 @app.route('/health')
 def health():
