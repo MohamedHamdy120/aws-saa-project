@@ -6,8 +6,21 @@ on:
     - main
 
 jobs:
-  hello:
+  analyze:
+    name: CodeQl-seucurity
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      seucurity-events: write
     steps:
-    - name: run-hello
-      run: echo "Hello CI"
+      - name: checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Initialize CodeQl
+        uses: github/codeql-action/init@v3
+        with: 
+          languages: python
+
+      - name: perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
