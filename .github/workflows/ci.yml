@@ -12,7 +12,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-      seucurity-events: write
+      security-events: write
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
