@@ -38,5 +38,5 @@ jobs:
            scan-type: 'fs'
            scan-ref: 'requirements.txt'
            format: 'table'
-           exite-code: '1'
+           exit-code: '1'
            severity: ' CRITICAL_HIGH'
