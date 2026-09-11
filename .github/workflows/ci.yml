@@ -5,9 +5,9 @@ on:
     branches:
     - main
 
-job:
+jobs:
   hello:
-  runs-on: ubuntu-latest
-  steps:
-  - name: run-hello
-  - run: echo "Hello CI"
+    runs-on: ubuntu-latest
+    steps:
+    - name: run-hello
+      run: echo "Hello CI"
