@@ -39,4 +39,4 @@ jobs:
            scan-ref: 'requirements.txt'
            format: 'table'
            exit-code: '1'
-           severity: ' HIGH'
+           severity: 'MEDIUM'
