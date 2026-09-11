@@ -27,7 +27,7 @@ jobs:
   
   trivy-scan:
     name: Dependency security scan
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
