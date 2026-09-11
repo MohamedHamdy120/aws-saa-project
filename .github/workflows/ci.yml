@@ -24,3 +24,19 @@ jobs:
 
       - name: perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
+  
+  trivy-scan:
+    name: Dependency security scan
+    runs-on: ubuntu-lastes
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Scan the requirements.txt file
+        uses: aquasecurity/trivy-action@master
+        with:
+          - scan-type: 'fs'
+          - scan-ref: 'requirements.txt'
+          - formate: 'table'
+          - exite-code: '1'
+          - severity: ' CRITICAL_HIGH'
