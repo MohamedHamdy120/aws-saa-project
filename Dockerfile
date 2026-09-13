@@ -1,8 +1,9 @@
-FROM python:3.11-slim
-WORKDIR /app
+FROM python:3.11-slim-bookworm as builder
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-RUN mkdir -p /app/instance
-EXPOSE 5000
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+FROM python:3.11-slim-bookworm
+COPY --from=builder /install /usr/local 
+WORKDIR /app
+COPY app.py .
 CMD ["python","app.py"]
