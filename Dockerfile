@@ -1,12 +1,14 @@
 FROM python:3.11-slim-bookworm as builder
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
 COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --updrade pip \
+&& pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.11-slim-bookworm
-COPY --from=builder /install /usr/local 
-RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* \
-&& (rm -rf /usr/local/lib/python3.11/site-packages/*.dist-info|| true )
-RUN pip install --no-cache-dir --upgrade pip "setuptools>=78.1.1" wheel "msgpack>=1.2.1"
+COPY --from=builder /venv /venv 
+ENV PATH="/venv/bin/$PATH"
+RUN 
 WORKDIR /app
 COPY app.py .
 CMD ["python","app.py"]
