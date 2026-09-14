@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 FROM python:3.11-slim-bookworm
 COPY --from=builder /venv /venv 
 ENV PATH="/venv/bin/$PATH"
-RUN 
+RUN rm -rf /usr/local/lib/python3.11/site-packages
 WORKDIR /app
 COPY app.py .
 CMD ["python","app.py"]
