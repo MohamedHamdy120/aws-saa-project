@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
 FROM python:3.11-slim-bookworm
 COPY --from=builder /venv /venv 
 ENV PATH="/venv/bin:${PATH}"
-RUN apt-get update && apt-get --upgrade -y && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/local/lib/python3.11/site-packages
 WORKDIR /app
 COPY app.py .
