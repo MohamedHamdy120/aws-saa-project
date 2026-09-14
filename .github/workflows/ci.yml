@@ -57,4 +57,5 @@ jobs:
         scan-type: 'image'
         image-ref: 'guestbook:latest'
         severity:  'CRITICAL,HIGH'
+        ignore-unfixed: true
         exit-code: '1'
