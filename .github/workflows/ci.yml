@@ -3,7 +3,7 @@ name: CI Workflow
 on:
   push:
     branches: [main]
-
+  workflow_dispatch:
 jobs:
   analyze:
     name: CodeQL-security
@@ -88,3 +88,16 @@ jobs:
           service: ${{ secrets.ECS_SERVICE }}
           cluster: ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+      - name: Sync frontend to S3
+        run: |
+          aws s3 sync . s3://${{secrets.S3_BUCKET}} \
+          --exclude "*" \
+          --include "/templates/index.html" \
+          --delete
+
+      - name: Invalidate the cloudfront cache
+        run: |
+          aws cloudfront create-invalidation \
+          --distribution-id ${{secret.CLOUDFRONT_DISTRIBUTION_ID}} \
+          --paths "/*"
