@@ -572,12 +572,15 @@ resource "aws_ecs_task_definition" "definition" {
 
 resource "aws_ecs_service" "service" {
 
-  name                 = "guestbook-service"
-  cluster              = aws_ecs_cluster.app.id
-  task_definition      = aws_ecs_task_definition.definition.arn
-  desired_count        = 1
-  launch_type          = "EC2"
-  force_new_deployment = true
+  name                               = "guestbook-service"
+  cluster                            = aws_ecs_cluster.app.id
+  task_definition                    = aws_ecs_task_definition.definition.arn
+  desired_count                      = 1
+  launch_type                        = "EC2"
+  force_new_deployment               = true
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent         = 100
+
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
     container_name   = "app"
