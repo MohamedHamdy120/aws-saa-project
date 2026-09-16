@@ -2,60 +2,89 @@ name: CI Workflow
 
 on:
   push:
-    branches:
-    - main
+    branches: [main]
 
 jobs:
   analyze:
-    name: CodeQl-seucurity
+    name: CodeQL-security
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Initialize CodeQl
-        uses: github/codeql-action/init@v3
-        with: 
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
           languages: python
+      - uses: github/codeql-action/analyze@v3
 
-      - name: perform CodeQL analysis
-        uses: github/codeql-action/analyze@v3
-  
   trivy-scan:
     name: Dependency security scan
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Scan the requirements.txt file
+      - uses: actions/checkout@v4
+      - uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: 'requirements.txt'
+          format: 'table'
+          exit-code: '1'
+          severity: 'HIGH,CRITICAL'
+
+  build-scan-push-deploy:
+    name: Build, scan, push, deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t guestbook:latest .
+
+      - name: Scan image
         uses: aquasecurity/trivy-action@master
         with:
-           scan-type: 'fs'
-           scan-ref: 'requirements.txt'
-           format: 'table'
-           exit-code: '1'
-           severity: 'MEDIUM'
+          scan-type: 'image'
+          image-ref: 'guestbook:latest'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: '1'
 
-  image-scan: 
-    name: Scan the image with triviy
-    runs-on: ubuntu-latest
-    steps: 
-     - name: Load the repository files
-       uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-     - name: Build the image
-       run: docker build -t guestbook:latest .
+      - name: Login to ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
 
-     - name: scan the image with triviy
-       uses: aquasecurity/trivy-action@master
-       with: 
-        scan-type: 'image'
-        image-ref: 'guestbook:latest'
-        severity:  'CRITICAL,HIGH'
-        ignore-unfixed: true
-        exit-code: '1'
+      - name: Tag and push image
+        run: |
+          IMAGE_URI="${{ steps.ecr-login.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest"
+          docker tag guestbook:latest "$IMAGE_URI"
+          docker push "$IMAGE_URI"
+
+      - name: Fetch current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ secrets.ECS_TASK_DEFINITION }} \
+            --query taskDefinition > taskdef.json
+
+      - name: Render new task definition
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: taskdef.json
+          container-name: ${{ secrets.CONTAINER_NAME }}
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          service: ${{ secrets.ECS_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
+          wait-for-service-stability: true
