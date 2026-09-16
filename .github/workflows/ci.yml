@@ -91,10 +91,8 @@ jobs:
 
       - name: Sync frontend to S3
         run: |
-          aws s3 sync . s3://${{secrets.S3_BUCKET}} \
-          --exclude "*" \
-          --include "templates/index.html" \
-          --delete
+              aws s3 cp templates/index.html \
+              s3://${{ secrets.S3_BUCKET }}/index.html
 
       - name: Invalidate the cloudfront cache
         run: |
