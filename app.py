@@ -24,13 +24,13 @@ def health():
     try:
         db.session.execute(text("SELECT 1"))
         return {
-            "status": "healthy"
+            "status": "healthy",
             "database": "connected"
         },200
     except Exception:
         db.session.rollback()
         return {
-            "status": "unhealthy"
+            "status": "unhealthy",
             "database": "disconnected"
         },503
 
