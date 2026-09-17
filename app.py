@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 from datetime import datetime
 from flask import Flask, request, jsonify
 
@@ -20,7 +21,19 @@ class Message(db.Model):
 
 @app.route('/health')
 def health():
-    return jsonify({"status": "ok"})
+    try:
+        db.session.execute(text("SELECT 1"))
+        return {
+            "status": "healthy"
+            "database": "connected"
+        },200
+    except Exception:
+        db.session.rollback()
+        return {
+            "status": "unhealthy"
+            "database": "disconnected"
+        },503
+
 
 @app.route('/messages', methods=['GET'])
 def get_messages():
