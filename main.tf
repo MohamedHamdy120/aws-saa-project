@@ -634,17 +634,26 @@ resource "aws_cloudfront_distribution" "cloud-distribution" {
   default_root_object = "index.html"
 
   ordered_cache_behavior {
+    path_pattern="/health"
+    allowed_methods  = ["HEAD", "GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"]
+    cached_methods   = ["HEAD", "GET"]
+    target_origin_id = "ALB-origin"
+    viewer_protocol_policy = "https-only"
+    cache_policy_id="4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+  }
+
+  ordered_cache_behavior {
     path_pattern     = "/messages"
     allowed_methods  = ["HEAD", "GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"]
     cached_methods   = ["HEAD", "GET"]
     target_origin_id = "ALB-origin"
 
     forwarded_values {
-      headers      = ["Access-Control-Request-Method", "Access-Control-Request-Header", "Origin"]
+      headers      = []
       query_string = true
 
       cookies {
-        forward = "all"
+        forward = "none"
       }
     }
     viewer_protocol_policy = "https-only"
