@@ -565,6 +565,11 @@ resource "aws_ecs_task_definition" "definition" {
         name      = "DATABASE_URL"
         valueFrom = aws_ssm_parameter.db_url.arn
       }]
+      environment = [{
+        name  = "SQS_QUEUE_URL"
+        value = aws_sqs_queue.guestbook_events.url
+
+      }]
     }
   ])
 
@@ -634,12 +639,12 @@ resource "aws_cloudfront_distribution" "cloud-distribution" {
   default_root_object = "index.html"
 
   ordered_cache_behavior {
-    path_pattern="/health"
-    allowed_methods  = ["HEAD", "GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"]
-    cached_methods   = ["HEAD", "GET"]
-    target_origin_id = "ALB-origin"
+    path_pattern           = "/health"
+    allowed_methods        = ["HEAD", "GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"]
+    cached_methods         = ["HEAD", "GET"]
+    target_origin_id       = "ALB-origin"
     viewer_protocol_policy = "https-only"
-    cache_policy_id="4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+    cache_policy_id        = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
   }
 
   ordered_cache_behavior {
@@ -698,6 +703,19 @@ resource "aws_s3_bucket_policy" "s3-policy" {
       Action    = "s3:GetObject"
       Resource  = "${aws_s3_bucket.bucket.arn}/*"
       Effect    = "Allow"
+    }]
+  })
+}
+resource "aws_iam_role_policy" "ecs_task_sqs" {
+
+  name = "ecs_task_sqs_send"
+  role = aws_iam_role.task-ssm.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["sqs:SendMessage"]
+      Resource = aws_sqs_queue.guestbook_events.arn
     }]
   })
 }
