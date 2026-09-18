@@ -70,14 +70,6 @@ def add_message():
     new_message=Message(name=name,message=message)
     db.session.add(new_message)
     db.session.commit()
-    return jsonify(
-        {
-            "id":new_message.id,
-            "name":new_message.name,
-            "message":new_message.message,
-            "timestamp":new_message.timestamp.isoformat()
-        }
-    ),201
     try:
         sqs.send_message(
         QueueUrl=SQS_QUEUE_URL ,
@@ -91,6 +83,15 @@ def add_message():
         app.logger.error(f"connection to the sqs queue failed :{e}")
 
 
+    return jsonify(
+        {
+            "id":new_message.id,
+            "name":new_message.name,
+            "message":new_message.message,
+            "timestamp":new_message.timestamp.isoformat()
+        }
+    ),201
+    
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
