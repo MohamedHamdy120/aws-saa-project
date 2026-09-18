@@ -71,7 +71,7 @@ def add_message():
     db.session.add(new_message)
     db.session.commit()
     try:
-        sqs.send_message(
+        response = sqs.send_message(
         QueueUrl=SQS_QUEUE_URL ,
         MessageBody=json.dumps({
             "event": "new_entry",
