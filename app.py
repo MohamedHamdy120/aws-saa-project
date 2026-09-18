@@ -78,6 +78,7 @@ def add_message():
             "id": new_message.id,
             "name": new_message.name
         }))
+        app.logger.info(f"SQS message sent: {response['MessageId']}")
 
     except Exception as e:
         app.logger.error(f"connection to the sqs queue failed :{e}")
