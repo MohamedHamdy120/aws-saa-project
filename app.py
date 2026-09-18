@@ -9,6 +9,7 @@ load_dotenv()
 DATABASE_URL=os.getenv("DATABASE_URL")
 SQS_QUEUE_URL=os.getenv("SQS_QUEUE_URL")
 app=Flask(__name__)
+sqs = boto3.client("sqs")
 
 app.config['SQLALCHEMY_DATABASE_URI']=DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
