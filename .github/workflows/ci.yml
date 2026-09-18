@@ -113,6 +113,6 @@ jobs:
         run: pip install requests
 
       - name: run the health check
-        env: APP_URI=${{secrets.APP_URI}}
+        env: APP_URL=${{secrets.APP_URI}}
         run: python scripts/health_check.py
     
