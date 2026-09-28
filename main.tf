@@ -1,7 +1,7 @@
 data "archive_file" "lambda_zip" {
   type= "zip"
-  source_dir="${path.module}/lambda"
-  output_path="${path.module}/lambda"
+  source_file="${path.module}/lambda/lambda_function.py"
+  output_path="${path.module}/lambda.zip"
 }
 
 data "aws_availability_zones" "available" {

@@ -13,3 +13,5 @@ instance/
 .DS_Store
 .vscode/
 .idea/
+lambda.zip
+*.zip
