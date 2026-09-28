@@ -1,3 +1,9 @@
+data "archieve_file" "lambda_zip {
+  type= "zip"
+  source_dir="${path.module}/lambds"
+  output_path="${path.module}/lambds"
+}
+
 data "aws_availability_zones" "available" {
   state = "available"
 }
@@ -377,7 +383,15 @@ resource "aws_autoscaling_group" "app" {
     propagate_at_launch = true
   }
 }
+resource "aws_vpc_endpoint" "sqs" {
+  vpc_endpoint_type   = "Interface"
+  service_name        = "com.amazonaws.eu-north-1.sqs"
+  vpc_id              = aws_vpc.main.id
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.endpoint.id]
+  private_dns_enabled = true
 
+}
 resource "aws_vpc_endpoint" "ssm" {
 
   vpc_endpoint_type   = "Interface"
