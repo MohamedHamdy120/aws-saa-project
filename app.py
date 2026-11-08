@@ -6,11 +6,13 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from datetime import datetime
 from flask import Flask, request, jsonify
+from prometheus_flask_exporter import PrometheusMetrics
 
 load_dotenv()
 DATABASE_URL=os.getenv("DATABASE_URL")
 SQS_QUEUE_URL=os.getenv("SQS_QUEUE_URL")
 app=Flask(__name__)
+metrics = PrometheusMetrics(app)
 sqs = boto3.client("sqs")
 
 app.config['SQLALCHEMY_DATABASE_URI']=DATABASE_URL

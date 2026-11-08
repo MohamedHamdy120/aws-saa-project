@@ -4,3 +4,4 @@ pymysql
 boto3
 python-dotenv
 flask-sqlalchemy
+prometheus-flask-exporter
