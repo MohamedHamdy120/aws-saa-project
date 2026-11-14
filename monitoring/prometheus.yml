@@ -3,4 +3,5 @@ global:
 scrape_configs:
   - job_name: flask
     static_configs:
-      - targets: ["alb-1960905573.eu-north-1.elb.amazonaws.com:80"]
+      - targets: ["alb-1778381419.eu-north-1.elb.amazonaws.com"]
+rule_files: ["alerts.yml"]
